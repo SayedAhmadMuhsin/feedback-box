@@ -110,7 +110,6 @@
 </div>
 
 <script>
-  // ⚠️ এখানে আপনার Google Apps Script Web App URL বসান
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVBb5N7fpWoLrv33OHKquHw32MaXvLSJh-QDeY5WlnX11tvbVfM8y7FICw4pLWhpKluQ/exec";
 
   const textarea = document.getElementById('messageBox');
@@ -131,6 +130,7 @@
 
     fetch(SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ message: message })
     })
