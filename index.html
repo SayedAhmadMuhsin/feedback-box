@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>আমার সম্পর্কে মন্তব্য</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1f2937, #4b3b6b, #6b2d5c);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 20px;
+    max-width: 460px;
+    width: 100%;
+    padding: 32px 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    text-align: center;
+  }
+  .icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 22px;
+    color: #2d2d2d;
+    margin-bottom: 8px;
+  }
+  p.sub {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+  textarea {
+    width: 100%;
+    min-height: 140px;
+    border-radius: 12px;
+    border: 1.5px solid #e0e0e0;
+    padding: 14px;
+    font-size: 15px;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    transition: border 0.2s;
+  }
+  textarea:focus {
+    border-color: #6b2d5c;
+  }
+  button {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6b2d5c, #4b3b6b);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .footer-note {
+    margin-top: 18px;
+    font-size: 12px;
+    color: #aaa;
+  }
+  .success {
+    display: none;
+  }
+  .success .icon { color: #3aa76d; }
+  .char-count {
+    text-align: left;
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card" id="formCard">
+  <div class="icon">💬</div>
+  <h1>আপনার মন্তব্য জানান</h1>
+  <p class="sub">সম্পূর্ণ পরিচয়হীনভাবে মন্তব্য করুন — কোনো লগইন বা ইমেইল লাগবে না। আপনার পরিচয় কোথাও সংরক্ষিত হয় না।</p>
+
+  <textarea id="messageBox" placeholder="এখানে আপনার মন্তব্য লিখুন..." maxlength="1500"></textarea>
+  <div class="char-count"><span id="charCount">0</span>/1500</div>
+
+  <button id="sendBtn" onclick="sendMessage()">পাঠিয়ে দিন</button>
+  <p class="footer-note">🔒 কোনো ব্যক্তিগত তথ্য সংগ্রহ করা হয় না</p>
+</div>
+
+<div class="card success" id="successCard">
+  <div class="icon">✅</div>
+  <h1>ধন্যবাদ!</h1>
+  <p class="sub">আপনার মন্তব্যটি সফলভাবে পাঠানো হয়েছে।</p>
+  <button onclick="resetForm()">আরেকটি মন্তব্য পাঠান</button>
+</div>
+
+<script>
+  // ⚠️ এখানে আপনার Google Apps Script Web App URL বসান
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVBb5N7fpWoLrv33OHKquHw32MaXvLSJh-QDeY5WlnX11tvbVfM8y7FICw4pLWhpKluQ/exec";
+
+  const textarea = document.getElementById('messageBox');
+  const charCount = document.getElementById('charCount');
+  textarea.addEventListener('input', () => {
+    charCount.textContent = textarea.value.length;
+  });
+
+  function sendMessage() {
+    const message = textarea.value.trim();
+    if (!message) {
+      alert("অনুগ্রহ করে কিছু লিখুন");
+      return;
+    }
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+    btn.textContent = "পাঠানো হচ্ছে...";
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ message: message })
+    })
+    .then(() => {
+      document.getElementById('formCard').style.display = 'none';
+      document.getElementById('successCard').style.display = 'block';
+    })
+    .catch(() => {
+      alert("সমস্যা হয়েছে, আবার চেষ্টা করুন");
+      btn.disabled = false;
+      btn.textContent = "পাঠিয়ে দিন";
+    });
+  }
+
+  function resetForm() {
+    textarea.value = '';
+    charCount.textContent = '0';
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('sendBtn').textContent = "পাঠিয়ে দিন";
+    document.getElementById('successCard').style.display = 'none';
+    document.getElementById('formCard').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
